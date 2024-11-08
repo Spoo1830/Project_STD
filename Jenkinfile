@@ -1,0 +1,43 @@
+pipeline {
+    agent any
+    
+    environment{
+        DOCKER_IMAGE = 'new_img'
+    }
+
+    stages {
+        stage('checkout code') {
+            steps {
+                git url:'https://github.com/Spoo1830/Project_STD.git', branch:'main' 
+            }
+        }
+        
+        stage('install Dependencies') {
+            steps {
+                script{
+                bat 'C:\\Users\\HPLAPT~1\\AppData\\Local\\Programs\\Python\\Python313\\Scripts\\pip.exe install flask_sqlalchemy'
+                }
+            }
+        }
+        
+           stage('Build Docker Image') {
+            steps {
+                script {
+                    // def imageName = "${DOCKER_IMAGE}".toLowerCase()
+                    bat "docker build -t ${DOCKER_IMAGE} ."
+                }
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                script {
+                     def imageName = "${DOCKER_IMAGE}".toLowerCase()
+                     bat "docker run -d -p 5010:5000 ${imageName}"
+                }
+            }
+        }
+
+    }
+    
+}
